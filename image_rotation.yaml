@@ -1,0 +1,11 @@
+path: .
+train: images/train_v3
+val: images/valid_v3
+
+nc: 1
+names: 
+  0: "rotated_photo"
+
+kpt_shape: [4, 3]
+
+flip_idx: [1, 0, 3, 2]
