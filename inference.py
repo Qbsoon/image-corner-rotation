@@ -75,8 +75,8 @@ progress = tqdm(total=len(image_paths), desc="Processing images", unit="image")
 for img_path in image_paths:
 	img = cv2.imread(img_path)
 	height, width = img.shape[:2]
-	card = np.ones((height+100, width+100, 3), dtype=np.uint8) * 255
-	card[50:50+height, 50:50+width] = img
+	card = np.ones((height+10, width+10, 3), dtype=np.uint8) * 255
+	card[5:5+height, 5:5+width] = img
 	cv2.imwrite(f"debug/{os.path.basename(img_path)}", card)
 	if img is None and verbose>=1:
 		print(f"Could not read image: {img_path}")
