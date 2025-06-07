@@ -3,6 +3,7 @@ import argparse
 import cv2
 import os
 import numpy as np
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='Run model inference on images.')
 parser.add_argument('input_dir', type=str, help='Directory containing images for inference.')
@@ -70,6 +71,7 @@ def crop_image_from_prediction(card, prediction):
 
 		return warped
 
+progress = tqdm(total=len(image_paths), desc="Processing images", unit="image")
 for img_path in image_paths:
 	img = cv2.imread(img_path)
 	height, width = img.shape[:2]
@@ -78,22 +80,27 @@ for img_path in image_paths:
 	cv2.imwrite(f"debug/{os.path.basename(img_path)}", card)
 	if img is None and verbose>=1:
 		print(f"Could not read image: {img_path}")
+		progress.update(1)
 		continue
 	results = model.predict(
 		source=img,
 		save=False,
 		conf=0.25,
-		imgsz=416
+		imgsz=416,
+		verbose=verbose==2
 	)
 	rotated = crop_image_from_prediction(card, results[0])
 	if rotated is None and verbose>=1:
 		print(f"Could not rotate image: {img_path}")
+		progress.update(1)
 		continue
 	try:
 		cv2.imwrite(f"{save_dir}/{os.path.basename(img_path)}", rotated)
 	except Exception as e:
 		if verbose>=1:
 			print(f"Error saving image {img_path} to {save_dir}: {e}")
+		progress.update(1)
 		continue
 	if verbose==2:
 		print(f"Processed {img_path}, saved to {save_dir}/{os.path.basename(img_path)}")
+	progress.update(1)
